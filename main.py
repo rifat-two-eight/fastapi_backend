@@ -1,6 +1,18 @@
 from fastapi import FastAPI
+from pydantic import BaseModel,HttpUrl
 
 app = FastAPI()
+
+class Course(BaseModel):
+    name: str
+    district: str
+    number: float
+    is_top: bool
+    website: HttpUrl
+
+@app.post("/course")
+def create_post(post:Course):
+    return {"data":post}
 
 @app.get("/")
 def root():
@@ -9,3 +21,7 @@ def root():
 @app.get("/details")
 def view_details():
     return {"phone":"iphone","brand":"oppo","price": 15000}
+
+@app.get("/name")
+def show_name():
+    return {"person1":"rifat","person2":"laiju","person3":"ambia","person4":"mizan"}
