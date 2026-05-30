@@ -22,6 +22,10 @@ def root():
 def view_details():
     return {"phone":"iphone","brand":"oppo","price": 15000}
 
+@app.get("/teams")
+def world_cup():
+    return {"champion":"Argentina","year":"2022"}
+
 @app.get("/name")
 def show_name():
     return {"person1":"rifat","person2":"laiju","person3":"ambia","person4":"mizan"}
