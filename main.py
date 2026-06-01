@@ -31,3 +31,7 @@ def world_cup():
 @app.get("/name")
 def show_name():
     return {"person1":"rifat","person2":"laiju","person3":"ambia","person4":"mizan"}
+
+@app.get("/age")
+def show_age():
+    return {"karim":28,"rahim":35}
