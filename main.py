@@ -10,7 +10,7 @@ class Course(BaseModel):
     is_top: bool
     website: HttpUrl
 
-# database
+# database Postgresql
 
 @app.post("/course")
 def create_post(post:Course):
