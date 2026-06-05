@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,HTTPException,status,Response
 from pydantic import BaseModel,HttpUrl
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -8,9 +8,8 @@ app = FastAPI()
 
 class Course(BaseModel):
     name: str
-    district: str
-    number: float
-    is_top: bool
+    instructor: str
+    duration: float
     website: HttpUrl
 
 # database Postgresql
@@ -34,7 +33,10 @@ def root():
 
 @app.post("/course")
 def create_post(post:Course):
-    return {"data":post}
+    cursor.execute("""insert into course(name,instructor,duration,website) values(%s,%s,%s,%s) returning *""",(post.name,post.instructor,post.duration,str(post.website)) )
+    new_post=cursor.fetchone()
+    conn.commit()
+    return {"data":new_post}
 
 
 @app.get("/details")
@@ -52,3 +54,23 @@ def show_name():
 @app.get("/age")
 def show_age():
     return {"karim":28,"rahim":35}
+
+@app.get("/course/{id}")
+def show_details(id:int):
+    cursor.execute("""select * from course where id=%s""",(str(id),))
+    details = cursor.fetchone()
+    if not details:
+        raise HTTPException(
+            status_code = status.HTTP_404_NOT_FOUND,
+            detail = f"course with id {id} not found"
+        )
+    return {"course details":details}
+
+@app.delete("/course/{id}",status_code = status.HTTP_204_NO_CONTENT)
+def delete_course(id:int):
+    cursor.execute("""delete from course where id=%s returning *""",(str(id),))
+    deleted_course = cursor.fetchone()
+    conn.commit()
+    if deleted_course==None:
+        raise HTTPException (status_code = status.HTTP_404_NOT_FOUND,detail = f"course with id {id} not exist")
+    return Response(status_code=status.HTTP_404_NOT_FOUND)
