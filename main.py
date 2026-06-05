@@ -74,3 +74,13 @@ def delete_course(id:int):
     if deleted_course==None:
         raise HTTPException (status_code = status.HTTP_404_NOT_FOUND,detail = f"course with id {id} not exist")
     return Response(status_code=status.HTTP_404_NOT_FOUND)
+
+@app.put("/course/{id}")
+def update_course(id:int,course:Course):
+    cursor.execute("""update course set name=%s,instructor=%s,duration=%s,website=%s where id=%s returning * """,(course.name,course.instructor,course.duration,str(course.website),str(id)))
+    updated_course= cursor.fetchone()
+    conn.commit()
+
+    if updated_course == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"course with id {id} does not exist")
+    return{"data":updated_course}
