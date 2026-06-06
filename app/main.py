@@ -1,10 +1,15 @@
-from fastapi import FastAPI,HTTPException,status,Response
+from fastapi import FastAPI,HTTPException,status,Response,Depends
 from pydantic import BaseModel,HttpUrl
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
+from . import models
+from sqlalchemy.orm import session
+from .database import get_db,engine
 
 app = FastAPI()
+
+models.Base.metadata.create_all(bind=engine)
 
 class Course(BaseModel):
     name: str
@@ -84,3 +89,8 @@ def update_course(id:int,course:Course):
     if updated_course == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"course with id {id} does not exist")
     return{"data":updated_course}
+
+# alchemy
+@app.get("/coursealchemy")
+def course(db:session = Depends(get_db)):
+    return {"status":"sqlalchemy works successfully"}
