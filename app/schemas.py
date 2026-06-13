@@ -1,4 +1,5 @@
-from pydantic import BaseModel,HttpUrl
+from pydantic import BaseModel,HttpUrl,EmailStr
+from datetime import datetime
 
 class CourseCreate(BaseModel):
     name: str
@@ -8,6 +9,18 @@ class CourseCreate(BaseModel):
 
 class CourseResponse(CourseCreate):
     id : int
+
+    class Config:
+        orm_model = True
+
+class UserCreate(BaseModel):
+    email : EmailStr
+    password : str
+
+class UserRes(BaseModel):
+    id : int
+    email : EmailStr
+    created_at : datetime
 
     class Config:
         orm_model = True
