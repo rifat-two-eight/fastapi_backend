@@ -17,6 +17,7 @@ class UserCreate(BaseModel):
     email : EmailStr
     password : str
 
+# userclass
 class UserRes(BaseModel):
     id : int
     email : EmailStr
