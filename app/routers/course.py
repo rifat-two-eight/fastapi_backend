@@ -2,7 +2,7 @@ from fastapi import FastAPI,HTTPException,status,Response,Depends,APIRouter
 from typing import List
 from sqlalchemy.orm import Session
 from ..database import get_db,engine
-from .. import models,schemas
+from .. import models,schemas,oauth2
 
 router = APIRouter(
     prefix="/course"
@@ -15,7 +15,7 @@ def course(db:Session = Depends(get_db)):
     return courses
 
 @router.get("/{id}",response_model=schemas.CourseResponse)
-def get_single(id:int,db:Session = Depends(get_db)):
+def get_single(id:int,db:Session = Depends(get_db),get_current_user:int=Depends(oauth2.get_current_user)):
     course = db.query(models.Course).filter(models.Course.id == id).first()
     if not course:
         raise HTTPException(
@@ -25,7 +25,7 @@ def get_single(id:int,db:Session = Depends(get_db)):
     return course
 
 @router.post("/",response_model=schemas.CourseResponse)
-def create_course(course:schemas.CourseCreate,db:Session = Depends(get_db)):
+def create_course(course:schemas.CourseCreate,db:Session = Depends(get_db),get_current_user:int=Depends(oauth2.get_current_user)):
     new_course = models.Course(
     name=course.name,
     instructor=course.instructor,
